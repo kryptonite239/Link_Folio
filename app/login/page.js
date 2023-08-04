@@ -34,24 +34,40 @@ export default function login() {
     }
   }
   return (
-    <>
-      <form onSubmit={formik.handleSubmit}>
+    <div className="flex flex-col items-center justify-center w-full h-[100vh]">
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex flex-col items-center justify-around w-1/2 h-1/3"
+      >
         <input
           type="email"
           placeholder="Enter Email"
           {...formik.getFieldProps("email")}
+          className="w-[300px] h-[50px] border-border border-[3px] rounded-full"
         />
         <input
           type="password"
           placeholder="password"
           {...formik.getFieldProps("password")}
+          className="w-[300px] h-[50px] border-border border-[3px] rounded-full"
         />
-        <button type="submit">Login</button>
+        <button
+          type="submit"
+          className="w-[150px] h-[50px] bg-[gray] text-text rounded-full hover:bg-sec ease-in-out duration-300"
+        >
+          Login
+        </button>
         <p>{msg}</p>
+        <p>
+          Don't Have An Account?{" "}
+          <Link
+            href={"/register"}
+            className=" text-main hover:text-sec hover:underline"
+          >
+            Register Here!
+          </Link>
+        </p>
       </form>
-      <p>
-        Don't Have An Account? <Link href={"/register"}>Register Here!</Link>
-      </p>
-    </>
+    </div>
   );
 }
