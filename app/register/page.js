@@ -1,9 +1,12 @@
 "use client";
 import { useFormik } from "formik";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function register() {
   const [msg, setMsg] = useState("");
+  const r = useRouter();
   const formik = useFormik({
     initialValues: {
       userName: "",
@@ -23,6 +26,7 @@ export default function register() {
     await fetch("/api/user", options).then((data, err) => {
       if (data) {
         if (data.status == "201") {
+          r.push("/login");
         }
       }
     });
@@ -47,6 +51,9 @@ export default function register() {
         />
         <button type="submit">Sign Up</button>
       </form>
+      <p>
+        Already Have An Account? <Link href={"/login"}>Sign In Here</Link>
+      </p>
     </>
   );
 }

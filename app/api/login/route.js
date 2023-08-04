@@ -1,6 +1,6 @@
 import db from "@/public/database/connectdb";
 import Users from "@/public/database/schema/user";
-import { hashSync } from "bcrypt";
+import { compareSync } from "bcrypt";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -8,14 +8,17 @@ export async function POST(request) {
 
   const body = await request.json();
   const user = await Users.findOne({ email: body.email });
-  const pass = user.password;
-  const hash = hashSync(body.password, 10);
-  console.log({ pass, hash });
+
+  // console.log({ pass, hash });
   if (!user) {
-    return NextResponse.json({ message: "No User Exists" });
+    return NextResponse.json({ message: "No User Exists" }, { status: 404 });
   }
-  if (pass !== hash) {
-    return NextResponse.json({ message: "Wrong Password" });
+  const hash = user.password;
+  if (hashCompare(hash, body.password) === false) {
+    return NextResponse.json({ message: "Wrong Password" }, { status: 401 });
   }
   return NextResponse.json({ message: "User Authorized" }, { status: 201 });
+}
+function hashCompare(hash, pass) {
+  return compareSync(pass, hash);
 }
