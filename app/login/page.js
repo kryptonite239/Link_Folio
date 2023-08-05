@@ -1,5 +1,6 @@
 "use client";
 import { useFormik } from "formik";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
@@ -25,24 +26,12 @@ export default function login() {
   };
   async function onSubmit(values) {
     setMsg("");
-    const options = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    };
-    const data = await fetch("/api/login", options);
-    if (data.status == 201) {
-      console.log(data);
-      r.push({
-        path: "/",
-      });
-    }
-    if (data.status == 401) {
-      setMsg("Wrong Passowrd, Try Again");
-    }
-    if (data.status == 404) {
-      setMsg("User Does Not Exist");
-    }
+    await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+      callbackUrl: "/",
+    });
   }
   return (
     <div className="flex flex-col items-center justify-center w-full h-[100vh]">
