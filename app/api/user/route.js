@@ -6,6 +6,13 @@ export async function POST(request) {
   await db().catch((err) => console.log(err));
   const body = await request.json();
   const { userName, email, password } = body;
+  const checkUser = await Users.findOne({ email });
+  if (checkUser) {
+    return NextResponse.json(
+      { message: "User Already Exists" },
+      { status: 404 }
+    );
+  }
   const hashValue = await hash(password, 10);
   await Users.create({
     userName,
