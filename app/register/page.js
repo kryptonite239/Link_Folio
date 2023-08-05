@@ -23,7 +23,7 @@ export default function register() {
     };
     console.log(values);
     console.log("Sending Request");
-    await fetch("/api/user", options).then((data, err) => {
+    await fetch("/api/auth/user", options).then((data, err) => {
       if (data) {
         if (data.status == "201") {
           r.push({
