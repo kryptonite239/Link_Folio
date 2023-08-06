@@ -1,8 +1,5 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import db from "@/public/database/connectdb";
-import Users from "@/public/database/schema/user";
-import { compareSync } from "bcrypt";
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -24,13 +21,29 @@ const handler = NextAuth({
           }),
         });
 
-        console.log(res);
         const user = await res.json();
         if (user) return user;
         return null;
       },
     }),
   ],
+  callbacks: {
+    async session(session, token) {
+      session.accessToken = token.accessToken;
+      session.user = token.user;
+      return session;
+    },
+    async jwt(token, user, account, profile, isNewUser) {
+      if (user) {
+        token.accessToken = user._id;
+        token.user = user;
+      }
+      return token;
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: "/login",
   },

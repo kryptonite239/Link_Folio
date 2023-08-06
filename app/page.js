@@ -4,11 +4,10 @@ import pic from "../public/pic_1.png";
 import Image from "next/image";
 import pic2 from "../public/pic_2.jpg";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 export default function Home() {
-  const { data } = useSession();
-  console.log(data);
+  const { data, expires } = useSession();
   if (data && data.user) {
-    return <>Welcome {data.user.email}</>;
   } else
     return (
       <main className="flex min-h-screen flex-col items-center justify-between p-10 font-main bg-main relative">
