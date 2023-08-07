@@ -30,7 +30,7 @@ export default function login() {
       email: values.email,
       password: values.password,
       redirect: true,
-      callbackUrl: "/",
+      callbackUrl: "/user",
     });
   }
   return (

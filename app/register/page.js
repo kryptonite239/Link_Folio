@@ -26,12 +26,7 @@ export default function register() {
     await fetch("/api/auth/user", options).then((data, err) => {
       if (data) {
         if (data.status == "201") {
-          r.push({
-            path: "/login",
-            query: {
-              user: data.userDetails,
-            },
-          });
+          r.push("/login");
         } else if (data.status == "404") {
           setMsg("User Already Exists");
         }

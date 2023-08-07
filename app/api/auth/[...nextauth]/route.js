@@ -22,25 +22,13 @@ const handler = NextAuth({
         });
 
         const user = await res.json();
+        console.log(user);
         if (user) return user;
         return null;
       },
     }),
   ],
-  callbacks: {
-    async session(session, token) {
-      session.accessToken = token.accessToken;
-      session.user = token.user;
-      return session;
-    },
-    async jwt(token, user, account, profile, isNewUser) {
-      if (user) {
-        token.accessToken = user._id;
-        token.user = user;
-      }
-      return token;
-    },
-  },
+  callbacks: {},
   session: {
     strategy: "jwt",
   },
