@@ -6,5 +6,5 @@ export const POST = async (request) => {
   const body = await request.json();
   await db();
   const user = await Users.findOne({ email: body.email });
-  return NextResponse.json({ message: user }, { status: 201 });
+  return new Response(JSON.stringify({ user }));
 };

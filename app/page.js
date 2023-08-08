@@ -4,12 +4,10 @@ import pic from "../public/pic_1.png";
 import Image from "next/image";
 import pic2 from "../public/pic_2.jpg";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 export default function Home() {
-  const { data, expires } = useSession();
+  const { data } = useSession();
   const router = useRouter();
-  console.log(data);
   if (data && data.user) {
     router.push("/user");
   } else
