@@ -1,15 +1,22 @@
 "use client";
 import { useFormik } from "formik";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 export default function register() {
-  const [msg, setMsg] = useState("");
-  const r = useRouter();
+  const session = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/");
+    }
+  }, []);
   const formik = useFormik({
     initialValues: {
-      userName: "",
+      username: "",
       email: "",
       password: "",
     },
@@ -21,15 +28,13 @@ export default function register() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     };
-    console.log(values);
-    console.log("Sending Request");
     await fetch("/api/auth/user", options).then((data, err) => {
       if (data) {
-        if (data.status == "201") {
-          r.push("/login");
-        } else if (data.status == "404") {
-          setMsg("User Already Exists");
-        }
+        toast.success("User Created");
+        router.push("/login");
+      }
+      if (err) {
+        toast.error(err);
       }
     });
   }
@@ -45,7 +50,7 @@ export default function register() {
         <input
           type="text"
           placeholder="Enter Name"
-          {...formik.getFieldProps("userName")}
+          {...formik.getFieldProps("username")}
           className="w-[300px] h-[50px] border-main border-[3px] rounded-full focus:outline-border text-[14px] font-semibold p-3"
         />
         <input
@@ -66,7 +71,6 @@ export default function register() {
         >
           Sign Up
         </button>
-        <p className="text-[red]">{msg}</p>
       </form>
       <p>
         Already Have An Account?{" "}

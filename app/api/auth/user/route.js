@@ -1,24 +1,27 @@
-import db from "@/public/database/connectdb";
-import Users from "@/public/database/schema/user";
-import { hash, hashSync } from "bcrypt";
+import client from "@/app/libs/prismadb";
 import { NextResponse } from "next/server";
-export async function POST(request) {
-  await db().catch((err) => console.log(err));
-  const body = await request.json();
-  const { userName, email, password } = body;
-  const checkUser = await Users.findOne({ email });
-  if (checkUser) {
-    return NextResponse.json(
-      { message: "User Already Exists" },
-      { status: 404 }
-    );
+import bcrypt from "bcrypt";
+export async function POST(Request) {
+  const body = await Request.json();
+  const { email, username, password } = body;
+  if ((!email, !username, !password)) {
+    throw new Error("Check Your Credentials and Try Again!");
   }
-  const hashValue = await hash(password, 10);
-  await Users.create({
-    userName,
-    email,
-    password: hashValue,
-    links: {},
+  const exists = await client.user.findUnique({
+    where: {
+      email,
+    },
   });
-  return NextResponse.json({ message: "User Created" }, { status: 201 });
+  if (exists) {
+    throw new Error("User Alreadt Exists");
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await client.user.create({
+    data: {
+      email,
+      name: username,
+      hashedPassword,
+    },
+  });
+  return new NextResponse.json(user);
 }

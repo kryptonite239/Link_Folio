@@ -3,12 +3,9 @@ import { useFormik } from "formik";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { toast } from "react-hot-toast";
 export default function login() {
-  const [msg, setMsg] = useState("");
-  const [checkEmail, setCheckEmail] = useState(false);
-  const [input, setInput] = useState("");
-  const r = useRouter();
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -16,21 +13,20 @@ export default function login() {
     },
     onSubmit,
   });
-  const validEmail = (e) => {
-    e.preventDefault();
-    setInput(e.target.value);
-    var validRegex =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (e.target.value.match(validRegex)) setCheckEmail(true);
-    else setCheckEmail(false);
-  };
+
   async function onSubmit(values) {
-    setMsg("");
     await signIn("credentials", {
       email: values.email,
       password: values.password,
-      redirect: true,
-      callbackUrl: "/user",
+      redirect: false,
+    }).then((data, err) => {
+      if (data) {
+        toast.success("User Logged In Succesfully");
+        router.push("/");
+      }
+      if (err) {
+        toast.error(err);
+      }
     });
   }
   return (
@@ -60,7 +56,6 @@ export default function login() {
         >
           Login
         </button>
-        <p className="text-[red] font-bold">{msg}</p>
         <p>
           Don't Have An Account?{" "}
           <Link

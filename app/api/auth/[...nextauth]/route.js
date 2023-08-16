@@ -1,6 +1,10 @@
 import NextAuth from "next-auth/next";
+import client from "@/app/libs/prismadb";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 const handler = NextAuth({
+  adapter: PrismaAdapter(client),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -9,26 +13,27 @@ const handler = NextAuth({
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorizing.. Wait");
-        const res = await fetch("http://localhost:3000/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const user = await client.user.findUnique({
+          where: {
             email: credentials.email,
-            password: credentials.password,
-          }),
+          },
         });
+        if (!user) {
+          throw new Error("No Email Exists");
+        }
+        const checkpass = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+        if (!checkpass) {
+          throw new Error("Password doesn't match");
+        }
 
-        const user = await res.json();
-        console.log(user);
-        if (user) return user;
-        return null;
+        return user;
       },
     }),
   ],
-  callbacks: {},
+  secret: process.env.SECRET,
   session: {
     strategy: "jwt",
   },
