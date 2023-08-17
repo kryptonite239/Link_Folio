@@ -13,7 +13,7 @@ export async function POST(Request) {
     },
   });
   if (exists) {
-    throw new Error("User Alreadt Exists");
+    throw new Error("User Already Exists");
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await client.user.create({
