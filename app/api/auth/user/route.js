@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 export async function POST(Request) {
   const body = await Request.json();
   const { email, username, password } = body;
-  if ((!email, !username, !password)) {
-    throw new Error("Check Your Credentials and Try Again!");
+  if (!email || !username || !password) {
+    return NextResponse.json(
+      {},
+      { status: 404, statusText: "Enter Proper Credentials" }
+    );
   }
   const exists = await client.user.findUnique({
     where: {
@@ -13,7 +16,10 @@ export async function POST(Request) {
     },
   });
   if (exists) {
-    throw new Error("User Already Exists");
+    return NextResponse.json(
+      {},
+      { status: 404, statusText: "User Already Exists" }
+    );
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await client.user.create({

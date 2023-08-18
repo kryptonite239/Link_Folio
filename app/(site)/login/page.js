@@ -19,13 +19,13 @@ export default function login() {
       email: values.email,
       password: values.password,
       redirect: false,
-    }).then((data, err) => {
-      if (data) {
+    }).then((callback) => {
+      if (callback?.ok && !callback?.error) {
         toast.success("User Logged In Succesfully");
-        router.push("/");
+        router.push("/dashboard");
       }
-      if (err) {
-        toast.error(err);
+      if (callback?.error) {
+        toast.error(callback.error);
       }
     });
   }

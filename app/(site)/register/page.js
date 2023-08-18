@@ -5,10 +5,11 @@ import { Input } from "../../../components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function register() {
+  const [loading, setLoading] = useState(false);
   const session = useSession();
   const router = useRouter();
   useEffect(() => {
@@ -25,19 +26,20 @@ export default function register() {
     onSubmit,
   });
   async function onSubmit(values) {
+    setLoading(true);
     const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     };
-    fetch("/api/auth/user", options).then((user, err) => {
-      if (err) {
-        toast.error(err);
-      } else if (user) {
-        toast.success("User Created");
-        router.push("/login");
-      }
-    });
+    const response = await fetch("/api/auth/user", options);
+    setLoading(false);
+    if (response?.ok) {
+      toast.success("User Created!");
+      router.push("/login");
+    } else {
+      toast.error(response?.statusText);
+    }
   }
   return (
     <div className="flex flex-col items-center justify-center w-full h-[100vh]">
@@ -63,15 +65,20 @@ export default function register() {
           placeholder="Enter password"
           {...formik.getFieldProps("password")}
         />
-        <Button type="submit" variant="outline" className="w-1/2">
+        <Button
+          type="submit"
+          variant="outline"
+          className="w-1/2"
+          disabled={loading}
+        >
           Sign Up
         </Button>
       </form>
-      <p>
+      <p className="text-white">
         Already Have An Account?{" "}
         <Link
           href={"/login"}
-          className="text-main hover:text-sec hover:underline"
+          className="text-slate-300 hover:text-gray hover:underline"
         >
           Login
         </Link>
