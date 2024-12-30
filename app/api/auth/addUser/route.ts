@@ -19,7 +19,7 @@ export async function POST(req: any, res: any) {
   await User.create({
     username,
     email,
-    password: hashedPassword,
+    password: password,
   });
   return NextResponse.json({
     status: 200,
